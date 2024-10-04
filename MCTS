@@ -1,0 +1,116 @@
+from Connect4 import connect4
+import random
+import math
+import copy
+import numpy as np
+
+class Node:
+    def __init__(self, parent, move):
+        self.parent = parent
+        self.N_parent = 0
+        self.N = 0
+        self.Q = 0
+        self.children = []
+        self.move = move
+
+class MCTS:
+    def __init__(self):
+        self.rollouts = 0
+        # first root node
+        self.root = Node(None, None)
+        self.game = connect4()
+        self.stop = 5000
+
+    def select(self):
+        node = self.root
+        highest_node_score = 0
+        selected_node = None
+        if not node.children:
+            self.expand(node, self.game)
+            selected_node = random.choice(node.children)
+        else:
+            for s in range(len(node.children)):
+                # because you can't divide by 0 and if N=1 and Q=0 the whole will not be explored anymore
+                if node.children[s].N <= 0.095 * algo.stop:
+                    node_score = 1000
+                else:
+                    node_score = node.children[s].Q / node.children[s].N + math.sqrt(2) * math.sqrt(math.log(node.children[s].N_parent) / node.children[s].N)
+                if node_score > highest_node_score:
+                    highest_node_score = node_score
+                    selected_node = node.children[s]
+        return selected_node
+
+    def expand(self, nodeE, game):
+        possibles = game.find_possible_moves()
+        nodeE.children = [Node(nodeE, move) for move in possibles]
+
+    def simulate(self, nodeS):
+        copy_game = copy.deepcopy(self.game)
+        copy_game.play_step(nodeS.move, False)
+        while not copy_game.check_game_end():
+            if not nodeS.children:
+                self.expand(nodeS, copy_game)
+            # note: nodeS changes here to the new randomly selected node (move)
+            nodeS = random.choice(nodeS.children)
+            copy_game.play_step(nodeS.move, False)
+
+        self.backpropagate(nodeS, copy_game.win)
+        self.rollouts += 1
+        # print("rollouts:", self.rollouts)
+
+    def backpropagate(self, node, win):
+        if win:
+            score = 1
+        else:
+            score = 0
+
+        while node is not None:
+            node.N += 1
+            node.Q += score
+            # it's incorrect for the first root node but that doesn't really matter
+            node.N_parent += 1
+            node = node.parent
+
+            # de parent node is the other player, so he gets another score (except when it's a draw)
+            if win:
+                score = 1 - score
+
+
+algo = MCTS()
+
+def playermove():
+    if algo.game.draw or algo.game.win:
+        exit()
+    algo.game.play_step(False, True)
+    print(np.matrix(algo.game.board))
+    for i in range(len(algo.root.children)):
+        if algo.root.children[i].move == algo.game.playeraction:
+            algo.root = algo.root.children[i]
+            algo.root.parent = None
+            break
+    algo.rollouts = 0
+    if algo.game.draw or algo.game.win:
+        exit()
+    print("MCTS is thinking...")
+
+
+firstM = True
+print("MCTS is thinking...")
+while True:
+    nodeL = algo.select()
+    algo.simulate(nodeL)
+    if algo.rollouts >= algo.stop:
+        highest_N = 0
+        final_move = 1
+        new_root = None
+        # loop through all children of the current root
+        for i in range(len(algo.root.children)):
+            if algo.root.children[i].N > highest_N:
+                highest_N = algo.root.children[i].N
+                final_move = algo.root.children[i].move
+                new_root = algo.root.children[i]
+        # play the move
+        algo.game.play_step(final_move, True)
+        algo.root = new_root
+        algo.root.parent = None
+        playermove()
