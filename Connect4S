@@ -1,4 +1,4 @@
-# Important: this game code is used for
+# Important: this game code is used by the Minimax algorithm, not Monte Carlo Tree Search
 
 import numpy as np
 import pygame
