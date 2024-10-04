@@ -1,0 +1,92 @@
+from Connect4S import connect4, getscore, interface
+import copy
+import numpy as np
+import pygame
+import time
+
+
+class minimax:
+    def __init__(self):
+        self.game = connect4()
+        self.scoreclass = getscore()
+
+    def algorithm(self, rgame, depth, alpha, beta, maximizingplayer):
+        if depth == 0 or rgame.check_game_end():
+            return self.scoreclass.score(np.array(rgame.board, dtype=float)), None
+
+        if maximizingplayer:
+            maxEval = -100000
+            maxMove = None
+            for move in rgame.find_possible_moves():
+                game = copy.deepcopy(rgame)
+                game.play_step(move, False)
+                eval = self.algorithm(game, depth - 1, alpha, beta, False)[0]
+                if eval > maxEval:
+                    maxEval = eval
+                    maxMove = move
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break
+            return maxEval, maxMove
+
+        else:  # minimizingplayer
+            minEval = 100000
+            minMove = None
+            for move in rgame.find_possible_moves():
+                game = copy.deepcopy(rgame)
+                game.play_step(move, False)
+                eval = self.algorithm(game, depth - 1, alpha, beta, True)[0]
+                if eval < minEval:
+                    minEval = eval
+                    minMove = move
+                beta = min(minEval, eval)
+                if beta <= alpha:
+                    break
+            return minEval, minMove
+
+
+algo = minimax()
+ui = interface()
+minimaxmoves = 0
+mm_times = 0
+depthL = 7
+
+def playermove():
+    if algo.game.draw or algo.game.win:
+        ui.makeui(algo.game.board)
+        time.sleep(5)
+        exit()
+    algo.game.play_step(False, True)
+    print(np.matrix(algo.game.board))
+    if algo.game.draw or algo.game.win:
+        ui.makeui(algo.game.board)
+        time.sleep(5)
+        exit()
+    print("Minimax is thinking...")
+
+print("Minimax is thinking...")
+while True:
+    # update ui (start, and after player)
+    ui.makeui(algo.game.board)
+    # run minimax
+    best_score, best_move = algo.algorithm(algo.game, depthL, -100000, 100000, True)
+    if best_score > 900:
+        print("You will lose soon...")
+    algo.game.play_step(best_move, True)
+    minimaxmoves += 1
+    # makes the bot thinks deeper and deeper
+    if mm_times >= 2 and minimaxmoves == 1:
+        depthL += 1
+    elif minimaxmoves == 3+mm_times*2:
+        depthL += 1
+        mm_times += 1
+        minimaxmoves = 0
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    # update ui after minimax
+    ui.makeui(algo.game.board)
+    playermove()
+
+
+
