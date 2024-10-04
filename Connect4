@@ -1,3 +1,5 @@
+# Important: this game is used for the Monte Carlo Tree Search algorithm, not Minimax
+
 import numpy as np
 import pygame
 
