@@ -1,0 +1,107 @@
+import numpy as np
+import pygame
+
+pygame.init()
+
+class connect4:
+    def __init__(self):
+        self.board = [[0] * 7 for _ in range(6)]
+        self.player = 2
+        self.draw = False
+        self.win = False
+        self.playeraction = None
+
+    def play_step(self, action, real):
+        self.player = 3-self.player
+        if not action:
+            # get user input
+            print(np.matrix(self.board))
+            action = input(f"Select a column (1-7) player {self.player}! ")
+            # check user input
+            possibles = self.find_possible_moves()
+            while True:
+                action = int(action)
+                if action in possibles:
+                    break
+                else:
+                    action = input(f"This action is impossible, please choose one of these: {', '.join(map(str, possibles))}. ")
+            self.playeraction = action
+        self.move(action)
+        # check if someone won or draw
+        if self.check_game_end():
+            if real:
+                print(f"Final board: \n{np.matrix(self.board)}")
+                if self.win:
+                    print(f"Player {self.player} won the game!")
+                else:
+                    print(f"No more moves possible, a draw!")
+
+    def find_possible_moves(self):
+         return [col+1 for col in range(7) if self.board[0][col] == 0]
+
+    def move(self, action):
+        # update the board
+        for i in reversed(range(6)):
+            if self.board[i][action-1] == 0:
+                self.board[i][action-1] = self.player
+                break
+
+    def check_game_end(self):
+        grid = self.board
+        # horizontal
+        for i in range(6):
+            for j in range(4):
+                if grid[i][j] == grid[i][j + 1] == grid[i][j + 2] == grid[i][j + 3] != 0:
+                    self.win = True
+                    return True
+        # vertical
+        for i in range(3):
+            for j in range(7):
+                if grid[i][j] == grid[i + 1][j] == grid[i + 2][j] == grid[i + 3][j] != 0:
+                    self.win = True
+                    return True
+
+        # diagonal from top left to bottom right
+        for i in range(3):
+            for j in range(4):
+                if grid[i][j] == grid[i + 1][j + 1] == grid[i + 2][j + 2] == grid[i + 3][j + 3] != 0:
+                    self.win = True
+                    return True
+
+        # diagonal from top right to bottom left
+        for i in range(3):
+            for j in range(3, 7):
+                if grid[i][j] == grid[i + 1][j - 1] == grid[i + 2][j - 2] == grid[i + 3][j - 3] != 0:
+                    self.win = True
+                    return True
+        # draw
+        if not self.find_possible_moves():
+            self.draw = True
+            return True
+
+        return False
+
+
+class interface:
+    def __init__(self):
+        self.display = pygame.display.set_mode((490, 420))
+        pygame.display.set_caption("Connect 4")
+        self.display.fill((0, 0, 255))
+        self.s = 70
+        for i in range(int(self.s-self.s/2), int(7*self.s-self.s/2), self.s):
+            for j in range(int(self.s-self.s/2), int(8*self.s-self.s/2), self.s):
+                pygame.draw.circle(self.display, (255, 255, 255), (j, i), self.s/2-4)
+
+    def makeui(self, board):
+        for i in range(6):
+            for j in range(7):
+                if board[i][j] == 1:
+                    pygame.draw.circle(self.display, (200, 0, 0), (self.s-self.s/2 + j*self.s, self.s-self.s/2 + i*self.s), self.s/2-4)
+                elif board[i][j] == 2:
+                    pygame.draw.circle(self.display, (255, 255, 0), (self.s-self.s/2 + j*self.s, self.s-self.s/2 + i*self.s), self.s/2-4)
+        pygame.display.flip()
+
+if __name__ == "__main__":
+    game = connect4()
+    while True:
+        game.play_step(False, True)
