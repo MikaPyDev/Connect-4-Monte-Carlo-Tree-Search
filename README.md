@@ -16,7 +16,7 @@ MCTS consists of the following three main functions:
 Functions 1, 2 and 3 are played over and over again until a certain end condition is reached, say after 5 seconds or after 10,000 roll-outs. Then the best move is chosen. Often this is the child node with the highest N because less time is spent on worse options during execution so the best option will then naturally have many Ns. However, you can also choose the highest Q/N but then you can get a node that has had few simulations and thus does not give a reliable result (maybe a bit weird). A combination of both ways can be a good technique though. 
 After choosing and playing a move, the tree is not discarded but reused as explained in function 3 in the last sentences.
 
-### Is it undefeateble?
+### Is it unbeatable?
 You can set the number of simulations yourself (self.stop). The higher you set this number, the better the bot will play, but the thinking time also increases. In addition, progress decreases exponentially when increasing the simulations. I set it to 5000 and then played for a few hours. At first I lost everything, but I got better and better and the bot plays a bit predictably. Also, MCTS occasionally missed the best move. That's why I won most of the games at one point. This encouraged me to test another algorithm: Minimax. Check out this repository too!
 
 ## Other useful information:
