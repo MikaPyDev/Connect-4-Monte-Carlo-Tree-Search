@@ -1,7 +1,4 @@
 import numpy as np
-import pygame
-
-pygame.init()
 
 class connect4:
     def __init__(self):
@@ -80,26 +77,6 @@ class connect4:
             return True
 
         return False
-
-
-class interface:
-    def __init__(self):
-        self.display = pygame.display.set_mode((490, 420))
-        pygame.display.set_caption("Connect 4")
-        self.display.fill((0, 0, 255))
-        self.s = 70
-        for i in range(int(self.s-self.s/2), int(7*self.s-self.s/2), self.s):
-            for j in range(int(self.s-self.s/2), int(8*self.s-self.s/2), self.s):
-                pygame.draw.circle(self.display, (255, 255, 255), (j, i), self.s/2-4)
-
-    def makeui(self, board):
-        for i in range(6):
-            for j in range(7):
-                if board[i][j] == 1:
-                    pygame.draw.circle(self.display, (200, 0, 0), (self.s-self.s/2 + j*self.s, self.s-self.s/2 + i*self.s), self.s/2-4)
-                elif board[i][j] == 2:
-                    pygame.draw.circle(self.display, (255, 255, 0), (self.s-self.s/2 + j*self.s, self.s-self.s/2 + i*self.s), self.s/2-4)
-        pygame.display.flip()
 
 if __name__ == "__main__":
     game = connect4()
