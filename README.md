@@ -19,7 +19,7 @@ After choosing and playing a move, the tree is not discarded but reused as expla
 ### Is it unbeatable?
 You can set the number of simulations yourself (self.stop). The higher you set this number, the better the bot will play, but the thinking time also increases. In addition, progress decreases exponentially when increasing the simulations. I set it to 5000 and then played for a few hours. At first I lost everything, but I got better and better and the bot plays a bit predictably. Also, MCTS occasionally missed the best move. That's why I won most of the games at one point. This encouraged me to test another algorithm: Minimax. Check out this repository too!
 
-## Other useful information:
+### Other useful information:
 The code folder contains 2 files:
   1. Connect4: the game. Start this file if you want to play against a friend;
   2. MCTS: the controller with the algorithm. Start this file if you want to play against the algorithm.
