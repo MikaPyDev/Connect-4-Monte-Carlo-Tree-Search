@@ -21,7 +21,7 @@ You can set the number of simulations yourself (self.stop). The higher you set t
 
 ### Other useful information
 The code folder contains 2 files:
-  1. Connect4: the game. Start this file if you want to play against a friend;
+  1. Connect4: the game. Start this file if you want to play against a friend (uncomment line 35 for this);
   2. MCTS: the controller with the algorithm. Start this file if you want to play against the algorithm.
 
 The only library you need to install for this project is Numpy.
