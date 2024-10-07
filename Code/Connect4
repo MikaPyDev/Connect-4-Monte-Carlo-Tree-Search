@@ -32,6 +32,7 @@ class connect4:
                     print(f"Player {self.player} won the game!")
                 else:
                     print(f"No more moves possible, a draw!")
+                # exit()  # uncomment this line is you want to play against a friend
 
     def find_possible_moves(self):
          return [col+1 for col in range(7) if self.board[0][col] == 0]
